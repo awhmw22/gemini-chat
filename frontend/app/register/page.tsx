@@ -72,7 +72,7 @@ export default function RegisterPage() {
 
       const registerResponse =
         await fetch(
-          "http://127.0.0.1:8000/auth/register",
+          "https://gemini-chat-backend-lw0b4cbuv-huzaifa-maalik-wattoos-projects.vercel.app/auth/register",
           {
             method: "POST",
 
@@ -107,7 +107,7 @@ export default function RegisterPage() {
 
       const loginResponse =
         await fetch(
-          "http://127.0.0.1:8000/auth/login",
+          "https://gemini-chat-backend-lw0b4cbuv-huzaifa-maalik-wattoos-projects.vercel.app/auth/login",
           {
             method: "POST",
 

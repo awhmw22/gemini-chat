@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import {
@@ -60,16 +61,20 @@ export default function LoginPage() {
       email.trim();
 
     if (!cleanEmail) {
+
       setError(
         "Please enter your email.",
       );
+
       return;
     }
 
     if (!password) {
+
       setError(
         "Please enter your password.",
       );
+
       return;
     }
 
@@ -81,10 +86,6 @@ export default function LoginPage() {
         cleanEmail,
         password,
       );
-
-      // IMPORTANT:
-      // Redirect only after the login
-      // request has successfully completed.
 
       router.replace("/chat");
 
@@ -119,6 +120,11 @@ export default function LoginPage() {
 
       <div className="w-full max-w-md">
 
+
+        {/* ====================================================
+            HEADER
+        ==================================================== */}
+
         <div className="mb-8 text-center">
 
           <h1 className="text-3xl font-bold">
@@ -126,18 +132,25 @@ export default function LoginPage() {
           </h1>
 
           <p className="mt-2 text-gray-400">
-            Sign in to your Gemini Chat account.
+            Sign in to your Huzaifa's Gemini Chat account.
           </p>
 
         </div>
 
+
+        {/* ====================================================
+            LOGIN FORM
+        ==================================================== */}
 
         <form
           onSubmit={handleLogin}
           className="rounded-2xl border border-gray-800 bg-gray-900 p-6 shadow-xl"
         >
 
-          {/* Email */}
+
+          {/* ==================================================
+              EMAIL
+          ================================================== */}
 
           <div className="mb-5">
 
@@ -166,7 +179,9 @@ export default function LoginPage() {
           </div>
 
 
-          {/* Password */}
+          {/* ==================================================
+              PASSWORD
+          ================================================== */}
 
           <div className="mb-5">
 
@@ -195,7 +210,9 @@ export default function LoginPage() {
           </div>
 
 
-          {/* Error */}
+          {/* ==================================================
+              ERROR
+          ================================================== */}
 
           {error && (
 
@@ -208,7 +225,9 @@ export default function LoginPage() {
           )}
 
 
-          {/* Submit */}
+          {/* ==================================================
+              SIGN IN BUTTON
+          ================================================== */}
 
           <button
             type="submit"
@@ -222,11 +241,32 @@ export default function LoginPage() {
 
           </button>
 
+
+          {/* ==================================================
+              REGISTER LINK
+          ================================================== */}
+
+          <div className="mt-6 border-t border-gray-800 pt-5 text-center">
+
+            <p className="text-sm text-gray-400">
+
+              Don't have an account?{" "}
+
+              <Link
+                href="/register"
+                className="font-semibold text-blue-400 transition hover:text-blue-300 hover:underline"
+              >
+                Sign up
+              </Link>
+
+            </p>
+
+          </div>
+
         </form>
 
       </div>
 
     </main>
-
   );
 }

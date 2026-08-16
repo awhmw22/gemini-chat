@@ -24,7 +24,7 @@ import {
 // API
 // ============================================================
 
-const API_URL = "http://localhost:8000";
+const API_URL = "https://gemini-chat-backend-lw0b4cbuv-huzaifa-maalik-wattoos-projects.vercel.app";
 
 // ============================================================
 // PAGE
