@@ -1,0 +1,28 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+
+# FastAPI
+.pytest_cache/
+
+# Next.js
+frontend/.next/
+frontend/node_modules/
+frontend/out/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
