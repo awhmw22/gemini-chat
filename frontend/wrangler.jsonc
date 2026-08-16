@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "huzaifas-ai-chat",
+  "compatibility_date": "2026-08-16",
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "huzaifas-ai-chat"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}
