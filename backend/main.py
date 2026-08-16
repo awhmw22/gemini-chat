@@ -57,6 +57,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        "https://huzaifas-ai-chat.wattoohuzaifa18.workers.dev",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -121,7 +122,6 @@ async def get_current_user(
     db = SessionLocal()
 
     try:
-
         user = (
             db.query(User)
             .filter(User.id == user_id)
@@ -534,19 +534,6 @@ async def chat(
 
 # ============================================================
 # STREAMING CHAT
-#
-# IMPORTANT:
-# There is ONLY ONE streaming implementation.
-#
-# Failed Gemini requests are rolled back.
-#
-# Successful requests commit:
-#
-#   conversation
-#   user message
-#   assistant message
-#
-# together.
 # ============================================================
 
 @app.post("/chat/stream")
@@ -554,10 +541,6 @@ async def chat_stream(
     request: ChatRequest,
     current_user: User = Depends(get_current_user),
 ):
-
-    # ========================================================
-    # VALIDATE
-    # ========================================================
 
     if not request.message.strip():
         raise HTTPException(
@@ -580,10 +563,6 @@ async def chat_stream(
 
     try:
 
-        # ----------------------------------------------------
-        # EXISTING CONVERSATION
-        # ----------------------------------------------------
-
         if request.conversation_id is not None:
 
             conversation = (
@@ -605,10 +584,6 @@ async def chat_stream(
                     detail="Conversation not found",
                 )
 
-        # ----------------------------------------------------
-        # NEW CONVERSATION
-        # ----------------------------------------------------
-
         else:
 
             conversation = Conversation(
@@ -617,20 +592,11 @@ async def chat_stream(
             )
 
             db.add(conversation)
-
-            # IMPORTANT:
-            #
-            # flush() gives us the ID but does NOT commit.
-            #
             db.flush()
 
             is_new_conversation = True
 
         conversation_id = conversation.id
-
-        # ----------------------------------------------------
-        # USER MESSAGE
-        # ----------------------------------------------------
 
         user_message = Message(
             conversation_id=conversation_id,
@@ -639,19 +605,9 @@ async def chat_stream(
         )
 
         db.add(user_message)
-
-        # Again:
-        #
-        # flush() but NOT commit().
-        #
-
         db.flush()
 
         user_message_id = user_message.id
-
-        # ----------------------------------------------------
-        # BUILD PROMPT
-        # ----------------------------------------------------
 
         messages = (
             db.query(Message)
@@ -663,10 +619,6 @@ async def chat_stream(
         )
 
         prompt = build_prompt(messages)
-
-        # ----------------------------------------------------
-        # DEBUG
-        # ----------------------------------------------------
 
         print()
         print("=" * 70)
@@ -718,19 +670,11 @@ async def chat_stream(
             print("Prompt:", prompt)
             print("=" * 70)
 
-            # ------------------------------------------------
-            # START GEMINI
-            # ------------------------------------------------
-
             stream = client.interactions.create(
                 model=GEMINI_MODEL,
                 input=prompt,
                 stream=True,
             )
-
-            # ------------------------------------------------
-            # SEND CONVERSATION ID
-            # ------------------------------------------------
 
             yield (
                 json.dumps(
@@ -741,10 +685,6 @@ async def chat_stream(
                 )
                 + "\n"
             )
-
-            # ------------------------------------------------
-            # READ STREAM
-            # ------------------------------------------------
 
             for event in stream:
 
@@ -819,10 +759,6 @@ async def chat_stream(
                         error_code or ""
                     ).lower()
 
-                    # ------------------------------------------------
-                    # QUOTA
-                    # ------------------------------------------------
-
                     if (
                         code_lower
                         in {
@@ -838,10 +774,6 @@ async def chat_stream(
                             "Please wait a minute and try again."
                         )
 
-                    # ------------------------------------------------
-                    # RATE LIMIT
-                    # ------------------------------------------------
-
                     if (
                         "rate limit" in message_lower
                         or "rate_limit" in message_lower
@@ -852,10 +784,6 @@ async def chat_stream(
                             "Gemini is temporarily rate-limited. "
                             "Please wait a moment and try again."
                         )
-
-                    # ------------------------------------------------
-                    # OTHER ERROR
-                    # ------------------------------------------------
 
                     if error_code:
 
@@ -953,10 +881,6 @@ async def chat_stream(
                     "Gemini returned an empty response."
                 )
 
-            # ====================================================
-            # GEMINI SUCCESS
-            # ====================================================
-
             gemini_succeeded = True
 
             # ====================================================
@@ -986,10 +910,6 @@ async def chat_stream(
             print("Assistant message:", assistant_message.id)
             print("=" * 70)
 
-            # ====================================================
-            # DONE
-            # ====================================================
-
             yield (
                 json.dumps(
                     {
@@ -1013,10 +933,6 @@ async def chat_stream(
                 repr(exc),
             )
             print("=" * 70)
-
-            # ====================================================
-            # ROLLBACK
-            # ====================================================
 
             if not gemini_succeeded:
 
@@ -1045,10 +961,6 @@ async def chat_stream(
                         repr(rollback_error),
                     )
 
-            # ====================================================
-            # FRIENDLY ERROR
-            # ====================================================
-
             error_message = str(exc)
 
             error_lower = error_message.lower()
@@ -1065,10 +977,6 @@ async def chat_stream(
                     "Please wait a minute and try again."
                 )
 
-            # ====================================================
-            # SEND ERROR TO FRONTEND
-            # ====================================================
-
             yield (
                 json.dumps(
                     {
@@ -1078,10 +986,6 @@ async def chat_stream(
                 )
                 + "\n"
             )
-
-        # ========================================================
-        # CLOSE DATABASE
-        # ========================================================
 
         finally:
 
