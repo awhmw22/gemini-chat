@@ -1,4 +1,4 @@
-const API_URL = "https://gemini-chat-backend-lw0b4cbuv-huzaifa-maalik-wattoos-projects.vercel.app";
+const API_URL = "https://gemini-chat-backend-970faj1d0-huzaifa-maalik-wattoos-projects.vercel.app";
 
 // ============================================================
 // Types
